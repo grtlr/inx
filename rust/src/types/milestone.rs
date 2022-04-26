@@ -5,6 +5,7 @@ use super::Error;
 use crate::proto;
 
 use bee_message_stardust as stardust;
+use packable::PackableExt;
 
 /// The [`MilestoneInfo`] type.
 #[derive(PartialEq, Debug)]
@@ -62,5 +63,13 @@ impl TryFrom<proto::Milestone> for Milestone {
                 .try_into()?,
             milestone: value.milestone.ok_or(Error::MissingField("milestone"))?.data,
         })
+    }
+}
+
+impl From<stardust::payload::milestone::MilestoneId> for proto::MilestoneId {
+    fn from(value: stardust::payload::milestone::MilestoneId) -> Self {
+        Self {
+            id: value.pack_to_vec(),
+        }
     }
 }

@@ -55,3 +55,11 @@ impl TryFrom<proto::RawMessage> for stardust::Message {
         stardust::Message::unpack_verified(value.data).map_err(|e| Error::PackableError(format!("{e}")))
     }
 }
+
+impl From<stardust::MessageId> for proto::MessageId {
+    fn from(value: stardust::MessageId) -> Self {
+        Self {
+            id: value.pack_to_vec(),
+        }
+    }
+}
