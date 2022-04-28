@@ -118,12 +118,6 @@ message MilestoneInfo {
   uint32 milestoneTimestamp = 3;
 }
 
-message MilestoneInfo {
-  MilestoneId milestoneId = 1;
-  uint32 milestoneIndex = 2;
-  uint32 milestoneTimestamp = 3;
-}
-
 message Milestone {
   MilestoneInfo milestoneInfo = 1;
   RawMilestone milestone = 2;

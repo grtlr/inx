@@ -25,7 +25,7 @@ pub struct NodeStatus {
 #[derive(PartialEq, Debug)]
 pub struct NodeConfiguration {
     /// The paramters of the protocol.
-    pub protocol_parameters: ProtocolParameters,
+    pub protocol_parameters: inx::proto::ProtocolParameters, // TODO: Adapt this
     /// The number of milestone public keys.
     pub milestone_public_key_count: u32,
     /// The key ranges that are used to sign milestones.
@@ -56,7 +56,10 @@ impl TryFrom<proto::NodeConfiguration> for NodeConfiguration {
 
     fn try_from(value: proto::NodeConfiguration) -> Result<Self, Self::Error> {
         Ok(NodeConfiguration {
-
+            protocol_parameters: value.protocol_parameters,
+            milestone_public_key_count: value.milestone_public_key_count,
+            milestone_key_ranges: value.milestone_key_ranges.map(Into::into).collect(),
+            base_token: value.base_token,
         })
     }
 }
@@ -69,7 +72,7 @@ impl From<proto::BaseToken> for BaseToken {
             unit: value.unit,
             sub_unit: value.subunit,
             decimals: value.decimals,
-            use_metrics_prefix: value.use_metric_system,
+            use_metrics_prefix: value.use_metric_prefix,
         }
     }
 }
