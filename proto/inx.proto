@@ -118,6 +118,12 @@ message MilestoneInfo {
   uint32 milestoneTimestamp = 3;
 }
 
+message MilestoneInfo {
+  MilestoneId milestoneId = 1;
+  uint32 milestoneIndex = 2;
+  uint32 milestoneTimestamp = 3;
+}
+
 message Milestone {
   MilestoneInfo milestoneInfo = 1;
   RawMilestone milestone = 2;
@@ -127,12 +133,12 @@ message WhiteFlagRequest {
   uint32 milestoneIndex = 1;
   uint32 milestoneTimestamp = 2;
   repeated MessageId parents = 3;
-  MilestoneId previousMilestoneId = 4;
+  MilestoneId lastMilestoneId = 4;
 }
 
 message WhiteFlagResponse {
-  bytes milestoneConfirmedMerkleRoot = 1;
-  bytes milestoneAppliedMerkleRoot = 2;
+  bytes milestoneConfirmedMerkleProof = 1;
+  bytes milestoneAppliedMerkleProof = 2;
 }
 
 // Messages
