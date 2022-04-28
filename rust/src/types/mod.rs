@@ -12,5 +12,5 @@ pub use self::{
     message::Message,
     metadata::{ConflictReason, LedgerInclusionState, MessageMetadata},
     milestone::{Milestone, MilestoneInfo},
-    node_status::NodeStatus,
+    node_status::{NodeStatus, NodeConfiguration, BaseToken},
 };

@@ -5,6 +5,7 @@ use super::Error;
 use crate::proto;
 
 use bee_message_stardust as stardust;
+use stardust::semantic::ConflictReason;
 
 #[allow(missing_docs)]
 #[derive(PartialEq, Debug)]
@@ -12,19 +13,6 @@ pub enum LedgerInclusionState {
     NoTransaction,
     Included,
     Conflicting,
-}
-
-#[allow(missing_docs)]
-#[derive(PartialEq, Debug)]
-pub enum ConflictReason {
-    None,
-    InputAlreadySpent,
-    InputAlreadySpentInThisMilestone,
-    InputNotFound,
-    InputOutputSumMismatch,
-    InvalidSignature,
-    InvalidNetworkId,
-    SemanticValidationFailed,
 }
 
 /// The metadata for a message with a given [`MessageId`](stardust::MessageId).
@@ -47,7 +35,7 @@ pub struct MessageMetadata {
     /// Indicates if a message is part of the ledger state or not.
     pub ledger_inclusion_state: LedgerInclusionState,
     /// Indicates if a conflict occured, and if so holds information about the reason for the conflict.
-    pub conflict_reason: ConflictReason,
+    pub conflict_reason: stardust::semantic::ConflictReason,
 }
 
 impl TryFrom<proto::MessageMetadata> for MessageMetadata {
@@ -86,21 +74,23 @@ impl From<proto::message_metadata::LedgerInclusionState> for LedgerInclusionStat
     }
 }
 
-impl From<proto::message_metadata::ConflictReason> for ConflictReason {
+impl From<proto::message_metadata::ConflictReason> for stardust::semantic::ConflictReason {
     fn from(value: proto::message_metadata::ConflictReason) -> Self {
+        use proto::message_metadata::ConflictReason as ProtoConflictReason;
+        use stardust::semantic::ConflictReason as StardustConflictReason;
+
         match value {
-            proto::message_metadata::ConflictReason::None => ConflictReason::None,
-            proto::message_metadata::ConflictReason::InputAlreadySpent => ConflictReason::InputAlreadySpent,
-            proto::message_metadata::ConflictReason::InputAlreadySpentInThisMilestone => {
-                ConflictReason::InputAlreadySpentInThisMilestone
+            ProtoConflictReason::None => StardustConflictReason::None,
+            ProtoConflictReason::InputAlreadySpent => StardustConflictReason::InputUtxoAlreadySpent,
+            ProtoConflictReason::InputAlreadySpentInThisMilestone => {
+                StardustConflictReason::InputUtxoAlreadySpentInThisMilestone
             }
-            proto::message_metadata::ConflictReason::InputNotFound => ConflictReason::InputNotFound,
-            proto::message_metadata::ConflictReason::InputOutputSumMismatch => ConflictReason::InputOutputSumMismatch,
-            proto::message_metadata::ConflictReason::InvalidSignature => ConflictReason::InvalidSignature,
-            proto::message_metadata::ConflictReason::InvalidNetworkId => ConflictReason::InvalidNetworkId,
-            proto::message_metadata::ConflictReason::SemanticValidationFailed => {
-                ConflictReason::SemanticValidationFailed
-            }
+            ProtoConflictReason::InputNotFound => StardustConflictReason::InputUtxoNotFound,
+            ProtoConflictReason::InputOutputSumMismatch => StardustConflictReason::CreatedConsumedAmountMismatch,
+            ProtoConflictReason::InvalidSignature => StardustConflictReason::InvalidSignature,
+            // This will be removed in future versions of INX.
+            ProtoConflictReason::InvalidNetworkId => StardustConflictReason::SemanticValidationFailed,
+            ProtoConflictReason::SemanticValidationFailed => StardustConflictReason::SemanticValidationFailed,
         }
     }
 }

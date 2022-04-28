@@ -5,6 +5,7 @@ use super::Error;
 use crate::proto;
 
 use bee_message_stardust as stardust;
+use bee_protocol_stardust::types::milestone_key_range::MilestoneKeyRange;
 use packable::PackableExt;
 
 /// The [`MilestoneInfo`] type.
@@ -25,6 +26,16 @@ pub struct Milestone {
     pub milestone_info: MilestoneInfo,
     /// The raw bytes of the milestone.
     pub milestone: stardust::payload::MilestonePayload,
+}
+
+impl From<proto::MilestoneKeyRange> for MilestoneKeyRange {
+    fn from(value: proto::MilestoneKeyRange) -> Self {
+        Self {
+            public_key: value.public_key,
+            start: value.start_index,
+            end: value.end_index,
+        }
+    }
 }
 
 impl TryFrom<proto::MilestoneId> for stardust::payload::milestone::MilestoneId {
